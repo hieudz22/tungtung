@@ -17,3 +17,6 @@ module.exports = function() {
 		XSMB_trathuong();
 	}, null, true, 'Asia/Ho_Chi_Minh');
 }
+git add config/cron.js
+git commit -m "Add cron config file"
+git push
