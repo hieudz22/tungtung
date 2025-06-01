@@ -1,4 +1,4 @@
-﻿var CryptoJS = require("crypto-js");
+var CryptoJS = require("crypto-js");
 let fs          = require('fs');
 let ThongBao    = require('../Models/Title');
 var LScuoc        = require('../Models/LichSu_Cuoc');
@@ -635,125 +635,35 @@ let thongtin_thanhtoan = function(game_id, dice = false){
 		}
 	}
 }
-let playGame = function(){async function sendToUsers(io, data) {
-  Object.values(io.users).forEach(users => {
-    users.forEach(client => {
-      if (client.gameEvent?.viewTaiXiu || client.scene === 'home') {
-        client.red(data);
-      }
-    });
-  });
-}
+let playGame = function(){
 
-async function updateHu(io) {
-  try {
-    const huData = await HU_game.findOne({ game: 'taixiumd5', type: 1 }, 'hutx');
-    const huAmount = huData?.hutx || 0;
-    const data = { taixiu: { hutx: { monney: huAmount } } };
-    sendToUsers(io, data);
-  } catch (err) {
-    console.error('Lỗi update HU:', err);
-  }
-}
-
-function playGame(io) {
-  async function updateTaiXiu(io) {
-  try {
-    let datahu = await HU_game.findOne({ game: 'taixiumd5', type: 1 }, 'hutx');
-    if (!datahu) {
-      console.log('Không tìm thấy dữ liệu HU_game');
-      return;
-    }
-
-    // Nếu bạn cần dùng thêm Model, hãy định nghĩa nó hoặc xóa phần này
-    // let result = await Model.findOne({ /* điều kiện bạn cần */ });
-    // if (!result) {
-    //   console.log('Không tìm thấy dữ liệu result');
-    //   return;
-    // }
-
-    // let value = result.hutx;
-
-    let home = { taixiu: { hutx: { monney: datahu.hutx } } };
-
-    Object.values(io.users).forEach(users => {
-      users.forEach(client => {
-        if (client.gameEvent?.viewTaiXiu) {
-          client.red(home);
-        } else if (client.scene === 'home') {
-          client.red(home);
-        }
-      });
-    });
-  } catch (err) {
-    console.error('Lỗi khi cập nhật TaiXiu:', err);
-  }
-}
-
-function playGame(io) {
-  io.TaiXiu_time = 72;
-
-  let interval = setInterval(async () => {
-    if (io.TaiXiu_time % 5 === 0) {
-      await updateTaiXiu(io);
-      console.log('Gửi update HU');
-    }
-
-    if (io.TaiXiu_time === 0) {
-      clearInterval(interval);
-      console.log('Kết thúc phiên chơi');
-      // Gửi kết quả, reset data...
-      sendToUsers(io, { taixiu: { finish: { phien: 123, dices: [2, 3, 5] } } });
-    }
-
-    io.TaiXiu_time--;
-  }, 1000);
-}
-
-module.exports = { playGame };
-
-}
-
-module.exports = { playGame };
-
-				}
+	
+	//io.TaiXiu_time = 77;
+	io.TaiXiu_time = 72;
+	gameLoop = setInterval(function(){
 		
-		// Nếu đang trong 1 hàm async hoặc bạn tạo hàm async mới
-async function updateTaiXiu() {
-  try {
-    let datahu = await HU_game.findOne({ game: 'taixiumd5', type: 1 }, 'hutx');
-    if (!datahu) {
-      console.log('Không tìm thấy dữ liệu HU_game');
-      return;
-    }
-
-    let result = await Model.findOne({ /* điều kiện bạn cần */ });
-    if (!result) {
-      console.log('Không tìm thấy dữ liệu result');
-      return;
-    }
-
-    let value = result.hutx;
-    let home = { taixiu: { hutx: { monney: tienhu } } };
-
-    Object.values(io.users).forEach(function(users) {
-      users.forEach(function(client) {
-        if (client.gameEvent !== void 0 && client.gameEvent.viewTaiXiu !== void 0 && client.gameEvent.viewTaiXiu) {
-          client.red(home);
-        } else if (client.scene == 'home') {
-          client.red(home);
-        }
-      });
-    });
-  } catch (err) {
-    console.error('Lỗi khi cập nhật TaiXiu:', err);
-  }
-}
-
-// Gọi hàm updateTaiXiu ở nơi phù hợp
-updateTaiXiu();
-
-
+		if (!(io.TaiXiu_time%5)) {
+			TopHu();
+			thongbao();
+	
+			HU_game.findOne({game:'taixiumd5', type:1}, 'hutx', function(err, datahu){
+				var tienhu = datahu.hutx;
+				let home;
+				home = {hutxmain: {monney:tienhu}};
+		Object.values(io.users).forEach(function(users){
+			users.forEach(function(client){
+				if (client.gameEvent !== void 0 && client.gameEvent.viewTaiXiu !== void 0 && client.gameEvent.viewTaiXiu){
+					client.red(home);
+				}else if(client.scene == 'home'){
+					client.red(home);
+				}
+			});
+		 });
+		});
+	
+		}
+		HU_game.findOne({game:'taixiumd5', type:1}, 'hutx', function(err, datahu){
+				var tienhu = datahu.hutx;
 				let home;
 			home = {taixiu: {hutx:{monney:tienhu}}};
            // home = {hutxmain: {monney:tienhu}};
@@ -766,6 +676,7 @@ updateTaiXiu();
 				}
 			});
 		 });
+		});
 		
 		if (io.TaiXiu_time == 64) {
 
