@@ -54,6 +54,7 @@ require('./app/Telegram/Telegram')(redT); // Telegram Bot
 require('./config/crontextchatdata')(); // copy text chat
 require('./config/croncreateboot')();// create boot name duoc doc tu file
 require('./config/cronchattx')(redT);// boot chat tài xiu
-app.listen(port, function() {
-    console.log("Server listen on port", port);
+const PORT = 10000;
+app.listen(PORT, () => {
+  console.log(`Server listen on port ${PORT}`);
 });
