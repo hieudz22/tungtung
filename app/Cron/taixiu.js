@@ -766,7 +766,6 @@ updateTaiXiu();
 				}
 			});
 		 });
-		});
 		
 		if (io.TaiXiu_time == 64) {
 
