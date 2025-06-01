@@ -662,9 +662,41 @@ let playGame = function(){
 		});
 	
 		}
-		HU_game.findOne({game:'taixiumd5', type:1}, 'hutx', function(err, datahu){
-				let result = await Model.findOne(...);
-let value = result.hutx; // GÂY LỖI nếu result === null
+		// Nếu đang trong 1 hàm async hoặc bạn tạo hàm async mới
+async function updateTaiXiu() {
+  try {
+    let datahu = await HU_game.findOne({ game: 'taixiumd5', type: 1 }, 'hutx');
+    if (!datahu) {
+      console.log('Không tìm thấy dữ liệu HU_game');
+      return;
+    }
+
+    let result = await Model.findOne({ /* điều kiện bạn cần */ });
+    if (!result) {
+      console.log('Không tìm thấy dữ liệu result');
+      return;
+    }
+
+    let value = result.hutx;
+    let home = { taixiu: { hutx: { monney: tienhu } } };
+
+    Object.values(io.users).forEach(function(users) {
+      users.forEach(function(client) {
+        if (client.gameEvent !== void 0 && client.gameEvent.viewTaiXiu !== void 0 && client.gameEvent.viewTaiXiu) {
+          client.red(home);
+        } else if (client.scene == 'home') {
+          client.red(home);
+        }
+      });
+    });
+  } catch (err) {
+    console.error('Lỗi khi cập nhật TaiXiu:', err);
+  }
+}
+
+// Gọi hàm updateTaiXiu ở nơi phù hợp
+updateTaiXiu();
+
 
 				let home;
 			home = {taixiu: {hutx:{monney:tienhu}}};
