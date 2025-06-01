@@ -663,7 +663,9 @@ let playGame = function(){
 	
 		}
 		HU_game.findOne({game:'taixiumd5', type:1}, 'hutx', function(err, datahu){
-				var tienhu = datahu.hutx;
+				let result = await Model.findOne(...);
+let value = result.hutx; // GÂY LỖI nếu result === null
+
 				let home;
 			home = {taixiu: {hutx:{monney:tienhu}}};
            // home = {hutxmain: {monney:tienhu}};
