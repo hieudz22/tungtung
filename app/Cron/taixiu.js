@@ -717,11 +717,7 @@ module.exports = { playGame };
 module.exports = { playGame };
 
 				}
-			});
-		 });
-		});
-	
-		}
+		
 		// Nếu đang trong 1 hàm async hoặc bạn tạo hàm async mới
 async function updateTaiXiu() {
   try {
