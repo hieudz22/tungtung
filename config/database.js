@@ -1,12 +1,9 @@
 module.exports = {
-	'url': 'mongodb://127.0.0.1:27017',
-	'options': {
-		'dbName': 'CLUB3333', // red
-		//'dbName': 'GAME', // red
-		//'dbName': 'admin', // red
-                //'dbName': 'vn11022021', // red
-		'useNewUrlParser': true,
-		'useUnifiedTopology': true,
-		//'autoIndex':       false,
-	},
+  url: process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/CLUB3333',
+  options: {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    // Nếu bạn muốn đặt dbName riêng, có thể thêm:
+    dbName: process.env.DB_NAME || 'CLUB3333',
+  },
 };
