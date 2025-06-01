@@ -635,27 +635,51 @@ let thongtin_thanhtoan = function(game_id, dice = false){
 		}
 	}
 }
-let playGame = function(){
+let playGame = function(){async function sendToUsers(io, data) {
+  Object.values(io.users).forEach(users => {
+    users.forEach(client => {
+      if (client.gameEvent?.viewTaiXiu || client.scene === 'home') {
+        client.red(data);
+      }
+    });
+  });
+}
 
-	
-	//io.TaiXiu_time = 77;
-	io.TaiXiu_time = 72;
-	gameLoop = setInterval(function(){
-		
-		if (!(io.TaiXiu_time%5)) {
-			TopHu();
-			thongbao();
-	
-			HU_game.findOne({game:'taixiumd5', type:1}, 'hutx', function(err, datahu){
-				var tienhu = datahu.hutx;
-				let home;
-				home = {hutxmain: {monney:tienhu}};
-		Object.values(io.users).forEach(function(users){
-			users.forEach(function(client){
-				if (client.gameEvent !== void 0 && client.gameEvent.viewTaiXiu !== void 0 && client.gameEvent.viewTaiXiu){
-					client.red(home);
-				}else if(client.scene == 'home'){
-					client.red(home);
+async function updateHu(io) {
+  try {
+    const huData = await HU_game.findOne({ game: 'taixiumd5', type: 1 }, 'hutx');
+    const huAmount = huData?.hutx || 0;
+    const data = { taixiu: { hutx: { monney: huAmount } } };
+    sendToUsers(io, data);
+  } catch (err) {
+    console.error('Lỗi update HU:', err);
+  }
+}
+
+function playGame(io) {
+  io.TaiXiu_time = 10;
+
+  const interval = setInterval(async () => {
+    console.log('Thời gian:', io.TaiXiu_time);
+
+    if (io.TaiXiu_time % 5 === 0) {
+      await updateHu(io);
+      console.log('Gửi update HU');
+    }
+
+    if (io.TaiXiu_time === 0) {
+      clearInterval(interval);
+      console.log('Kết thúc phiên chơi');
+      // Gửi kết quả, reset data...
+      sendToUsers(io, { taixiu: { finish: { phien: 123, dices: [2,3,5] } } });
+    }
+
+    io.TaiXiu_time--;
+  }, 1000);
+}
+
+module.exports = { playGame };
+
 				}
 			});
 		 });
